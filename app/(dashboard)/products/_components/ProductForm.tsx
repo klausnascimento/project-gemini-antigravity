@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react'
 import { saveProductAction, ActionState } from '../actions'
-import { Product } from '@prisma/client'
+import { SerializedProduct } from '@/lib/types'
 
 const initialState: ActionState = {
   ok: false,
@@ -11,7 +11,7 @@ const initialState: ActionState = {
 
 type Props = {
   onClose: () => void
-  product?: Product | null
+  product?: SerializedProduct | null
 }
 
 export function ProductForm({ onClose, product }: Props) {
@@ -61,7 +61,7 @@ export function ProductForm({ onClose, product }: Props) {
                     name="price" 
                     type="number" 
                     step="0.01" 
-                    defaultValue={product?.price ? Number(product.price) : ''}
+                    defaultValue={product?.price ?? ''}
                     className="w-full border rounded px-3 py-2 dark:bg-zinc-800 dark:border-zinc-700" 
                 />
                 {state?.fieldErrors?.price && <p className="text-red-500 text-xs mt-1">{state.fieldErrors.price}</p>}

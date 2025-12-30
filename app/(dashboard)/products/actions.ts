@@ -1,7 +1,9 @@
 'use server'
 
 import { productRepo } from '@/lib/productRepo'
-import { revalidatePath, after } from 'next/cache'
+import { Prisma } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 
 export type ActionState = {
   ok: boolean
@@ -43,7 +45,7 @@ export async function saveProductAction(prevState: ActionState, formData: FormDa
        await productRepo.update(data.id, {
          name: data.name,
          sku: data.sku,
-         price: data.price,
+         price: new Prisma.Decimal(data.price),
          stock: data.stock,
          category: data.category
        })
@@ -54,7 +56,7 @@ export async function saveProductAction(prevState: ActionState, formData: FormDa
        await productRepo.create({
          name: data.name,
          sku: data.sku,
-         price: data.price,
+         price: new Prisma.Decimal(data.price),
          stock: data.stock,
          category: data.category
        })

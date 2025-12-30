@@ -17,13 +17,19 @@ type PageProps = {
 export default async function ProductsPage({ searchParams }: PageProps) {
   const params = await searchParams
   
-  const { products, metadata } = await productRepo.findMany({
+  const { products: rawProducts, metadata } = await productRepo.findMany({
     query: params.query,
     status: params.status as any,
     category: params.category,
     page: Number(params.page) || 1,
     pageSize: 10
   })
+
+  // Serialize products (convert Decimal to number)
+  const products = rawProducts.map(p => ({
+    ...p,
+    price: Number(p.price)
+  }))
 
   const categories = await productRepo.getCategories()
 

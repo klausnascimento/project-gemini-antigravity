@@ -1,16 +1,16 @@
 'use client'
 
 import { useOptimistic, useState, useTransition } from 'react'
-import { Product } from '@prisma/client'
+import { SerializedProduct } from '@/lib/types'
 import { toggleActiveAction } from '../actions'
 import { ProductForm } from './ProductForm'
 
 type Props = {
-  products: Product[]
+  products: SerializedProduct[]
 }
 
 export function ProductTable({ products }: Props) {
-  const [editingProduct, setEditingProduct] = useState<Product | null | 'new'>(null)
+  const [editingProduct, setEditingProduct] = useState<SerializedProduct | null | 'new'>(null)
   
   // Optimistic UI for toggling active status
   const [optimisticProducts, setOptimisticProduct] = useOptimistic(

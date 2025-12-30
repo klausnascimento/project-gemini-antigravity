@@ -1,5 +1,6 @@
 import { productRepo } from '../lib/productRepo'
 import { prisma } from '../lib/prisma'
+import { Prisma } from '@prisma/client'
 
 async function runTests() {
   console.log('Running Repository Tests...')
@@ -12,7 +13,7 @@ async function runTests() {
   const p1 = await productRepo.create({
     name: 'Test Product 1',
     sku: 'TEST-001',
-    price: 99.99,
+    price: new Prisma.Decimal(99.99),
     stock: 10,
     category: 'Electronics'
   })
@@ -26,7 +27,7 @@ async function runTests() {
 
   // 3. Update
   console.log('Test 3: Update')
-  const p1Updated = await productRepo.update(p1.id, { price: 100 })
+  const p1Updated = await productRepo.update(p1.id, { price: new Prisma.Decimal(100) })
   console.assert(p1Updated.price.toString() === '100', 'Price should be updated')
 
   // 4. Toggle Active
@@ -40,7 +41,7 @@ async function runTests() {
      await productRepo.create({
         name: 'Duplicate SKU',
         sku: 'TEST-001',
-        price: 50,
+        price: new Prisma.Decimal(50),
         stock: 5,
         category: 'Test'
      })
