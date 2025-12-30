@@ -1,34 +1,71 @@
-## Getting Started
+# Product CRUD (Next.js 15 + Prisma)
 
-First, run the development server:
+This is a complete CRUD example built with Next.js 15 (App Router), React 19, Prisma, and Tailwind CSS v4.
+
+## Setup
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Initialize Database**:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+3. **Run Server**:
+   ```bash
+   npm run dev
+   ```
+   Access at [http://localhost:3000/products](http://localhost:3000/products)
+
+## Features
+
+- **Next.js 15**: App Router, Server Actions, `next/form`.
+- **React 19**: `useActionState`, `useOptimistic`, `useTransition`.
+- **Prisma**: SQLite database with repository pattern (`lib/productRepo.ts`).
+- **Tailwind v4**: CSS-first configuration.
+
+## API Usage
+
+### GET /api/products
+List products with filtering and pagination.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# List all
+curl http://localhost:3000/api/products
+
+# Filter by name and status
+curl "http://localhost:3000/api/products?query=Test&status=active"
+
+# Sort by price descending
+curl "http://localhost:3000/api/products?sort=price:desc"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### POST /api/products
+Create a new product.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+curl -X POST http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Gaming Mouse",
+    "sku": "GM-001",
+    "price": 59.99,
+    "stock": 100,
+    "category": "Electronics"
+  }'
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### PATCH /api/products/[id]
+Update a product.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+curl -X PATCH http://localhost:3000/api/products/YOUR_PRODUCT_ID \
+  -H "Content-Type: application/json" \
+  -d '{
+    "price": 49.99,
+    "stock": 95
+  }'
+```
