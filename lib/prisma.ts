@@ -4,7 +4,9 @@ import Database from 'better-sqlite3'
 
 const prismaClientSingleton = () => {
   // Extract path from DATABASE_URL ("file:./dev.db" -> "./dev.db")
+  console.log('DEBUG: DATABASE_URL:', process.env.DATABASE_URL)
   const url = process.env.DATABASE_URL?.replace('file:', '') || './dev.db'
+  console.log('DEBUG: SQLite URL:', url)
   const adapter = new PrismaBetterSqlite3(new Database(url) as any)
   
   return new PrismaClient({ adapter } as any)
