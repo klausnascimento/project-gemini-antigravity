@@ -1,23 +1,16 @@
-import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
-import Database from 'better-sqlite3'
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const prismaClientSingleton = () => {
-  // Extract path from DATABASE_URL ("file:./dev.db" -> "./dev.db")
-  console.log('DEBUG: DATABASE_URL:', process.env.DATABASE_URL)
-  const url = process.env.DATABASE_URL?.replace('file:', '') || './dev.db'
-  console.log('DEBUG: SQLite URL:', url)
-  const adapter = new PrismaBetterSqlite3(new Database(url) as any)
-  
-  return new PrismaClient({ adapter } as any)
-}
-
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
+  const url = process.env.DATABASE_URL ?? "file:./dev.db";
+  const adapter = new PrismaBetterSqlite3({ url });
+  return new PrismaClient({ adapter } as any);
+};
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientSingleton | undefined
-}
+  prisma: ReturnType<typeof prismaClientSingleton> | undefined;
+};
 
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
