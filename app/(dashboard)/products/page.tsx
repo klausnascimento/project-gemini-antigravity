@@ -26,7 +26,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   })
 
   // Serialize products (convert Decimal to number)
-  const products = rawProducts.map(p => ({
+  const products = rawProducts.map((p: any) => ({
     ...p,
     price: Number(p.price)
   }))
@@ -47,7 +47,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold tracking-tight">Products Dashboard</h1>
         </div>
-        <ProductFilters categories={categories.filter((c): c is string => !!c)} />
+        <ProductFilters categories={categories.filter((c: any): c is string => !!c)} />
       </div>
 
       <Suspense fallback={<div>Loading...</div>}>

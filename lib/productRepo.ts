@@ -21,9 +21,9 @@ export const productRepo = {
         data: {
           ...data,
           active: true,
-        },
+        } as Prisma.ProductCreateInput,
       })
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new Error('SKU already exists')
@@ -39,7 +39,7 @@ export const productRepo = {
         where: { id },
         data,
       })
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new Error('SKU already exists')
@@ -110,6 +110,6 @@ export const productRepo = {
     const categories = await prisma.product.groupBy({
         by: ['category'],
     })
-    return categories.map(c => c.category)
+    return categories.map((c: any) => c.category)
   }
 }

@@ -1,9 +1,10 @@
 'use client'
 
-import { useOptimistic, useState, useTransition } from 'react'
+import { useOptimistic, useState, useTransition, useEffect } from 'react'
 import { SerializedProduct } from '@/lib/types'
 import { toggleActiveAction } from '../actions'
 import { ProductForm } from './ProductForm'
+import { useFavoritesStore } from '@/app/store'
 
 type Props = {
   products: SerializedProduct[]
@@ -11,6 +12,13 @@ type Props = {
 
 export function ProductTable({ products }: Props) {
   const [editingProduct, setEditingProduct] = useState<SerializedProduct | null | 'new'>(null)
+  
+  const { toggleFavorite, isFavorite } = useFavoritesStore()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   // Optimistic UI for toggling active status
   const [optimisticProducts, setOptimisticProduct] = useOptimistic(
@@ -85,6 +93,17 @@ export function ProductTable({ products }: Props) {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
+                    <button 
+                        onClick={() => toggleFavorite(product.id)}
+                        className={`rounded-md p-2 hover:bg-secondary ${
+                             mounted && isFavorite(product.id) ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'
+                        }`}
+                        title={mounted && isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={mounted && isFavorite(product.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                        </svg>
+                    </button>
                     <button 
                         onClick={() => setEditingProduct(product)}
                         className="rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
