@@ -34,8 +34,7 @@ export function HabitForm({ onAddHabit }: HabitFormProps) {
         disabled={!title.trim()}
         className="flex h-[46px] items-center justify-center rounded-xl bg-zinc-900 px-5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-zinc-800 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
-        <Plus className="mr-2 h-5 w-5" />
-        Adicionar
+        <Plus />
       </button>
     </form>
   );

@@ -50,7 +50,7 @@ export function HabitTrackerView() {
   };
 
   const handleRemoveHabit = (id: string) => {
-    setHabits((prev) => prev.filter((h) => h !== id ? h.id !== id : false));
+    setHabits((prev) => prev.filter((h) => h.id !== id));
   };
 
   if (!isMounted || !currentDateString) {
