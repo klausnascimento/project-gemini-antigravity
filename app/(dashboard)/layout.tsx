@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { routes } from '@/lib/routes'
 
 export default function DashboardLayout({
   children,
@@ -11,7 +12,7 @@ export default function DashboardLayout({
          <div className="flex items-center justify-between max-w-7xl mx-auto">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">Store Admin</h1>
             <div className="flex gap-4">
-              <Link href="/products" className="text-sm font-medium hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white">Products</Link>
+              <Link href={routes.products} className="text-sm font-medium hover:text-blue-600 dark:text-zinc-400 dark:hover:text-white">Products</Link>
             </div>
          </div>
       </nav>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from "next/link";
+import { routes } from "@/lib/routes";
 import { useFavoritesStore } from "@/app/store";
 import { useEffect, useState } from "react";
 
@@ -16,7 +17,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={routes.home} className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -1,71 +1,49 @@
-# Product CRUD (Next.js 15 + Prisma)
+# Project Gemini Antigravity (Habit Tracker Dashboard)
 
-This is a complete CRUD example built with Next.js 15 (App Router), React 19, Prisma, and Tailwind CSS v4.
+Projeto voltado para gerenciamento dinâmico de produtividade (como o painel de Hábitos) com alta resposta na renderização e aderência estrita a boas práticas modernas de UI/UX, utilizando abordagens robustas de persistência local e cache.
 
-## Setup
+## 🚀 Setup
 
-1. **Install dependencies**:
+1. **Instale as dependências base:**
    ```bash
    npm install
    ```
 
-2. **Initialize Database**:
+2. **Geração do Banco de Dados (Prisma + SQLite):**
    ```bash
-   npx prisma migrate dev
+   npm run prisma:generate
+   npm run prisma:migrate
    ```
 
-3. **Run Server**:
+3. **Inicie o servidor de desenvolvimento:**
    ```bash
    npm run dev
    ```
-   Access at [http://localhost:3000/products](http://localhost:3000/products)
+   Acesse a aplicação operante em [http://localhost:3000](http://localhost:3000) (Use `/habits` para acessar as rotas construídas do dashboard).
 
-## Features
+## 🛠 Stack
 
-- **Next.js 15**: App Router, Server Actions, `next/form`.
-- **React 19**: `useActionState`, `useOptimistic`, `useTransition`.
-- **Prisma**: SQLite database with repository pattern (`lib/productRepo.ts`).
-- **Tailwind v4**: CSS-first configuration.
+- **Core & Roteamento:** Next.js 16 (App Router), React 19, TypeScript rigoroso.
+- **Estilização:** Exclusivo com Tailwind CSS v4 (Design System focado, sem CSS Modules). Dinamismo tratado via `tailwind-merge` + `clsx`.
+- **Estado e Memória:** Patterns visuais isolados, Next.js Hydration Bypass e Zustand (`/app/store`).
+- **Persistência de Dados Base:** Prisma ORM com adapter *Better-SQLite3*.
+- **Pacotes Essenciais Adicionais:** Lucide React para iconografia clean.
 
-## API Usage
+## 📜 Scripts
 
-### GET /api/products
-List products with filtering and pagination.
+| Comando | Descrição |
+| :--- | :--- |
+| `npm run dev` | Inicia o servidor local Next.js em ambiente de testes. |
+| `npm run build` | Limpa e compila o projeto globalmente focando cache para a Vercel/Node Prod. |
+| `npm run prisma:studio` | Interface visual para validar entradas das tabelas geridas pelo banco de dados. |
 
-```bash
-# List all
-curl http://localhost:3000/api/products
+## 🏛 Arquitetura
 
-# Filter by name and status
-curl "http://localhost:3000/api/products?query=Test&status=active"
+O ecossistema é mantido modular para prever escalabilidade:
 
-# Sort by price descending
-curl "http://localhost:3000/api/products?sort=price:desc"
-```
-
-### POST /api/products
-Create a new product.
-
-```bash
-curl -X POST http://localhost:3000/api/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Gaming Mouse",
-    "sku": "GM-001",
-    "price": 59.99,
-    "stock": 100,
-    "category": "Electronics"
-  }'
-```
-
-### PATCH /api/products/[id]
-Update a product.
-
-```bash
-curl -X PATCH http://localhost:3000/api/products/YOUR_PRODUCT_ID \
-  -H "Content-Type: application/json" \
-  -d '{
-    "price": 49.99,
-    "stock": 95
-  }'
-```
+- **`/app`**: Orquestrador das rotas do framework. Componentes interligados por uma fonte única de verdade definida em `lib/routes.ts`.
+- **`/components`**: Instâncias de UI desacopladas (isolamento das views e actions, como os formulários de tracker).
+- **`/hooks`**: Controladores auxiliares do Client (ex: `useLocalStorage` construído para abstrair APIs da web de forma segura do Server Side Render).
+- **`/types`**: Repositório de centralização base das tipagens do ecossistema.
+- **`/utils`**: Motor matemático invisível. Funções puras baseadas na regra de negócio (como algoritimo calculador de *Streak/Sequência* de dias) testáveis independentementes.
+- **`/lib`**: Componentes e adaptadores globais primários da infra.
