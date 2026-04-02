@@ -1,8 +1,8 @@
 'use server'
 
-import { productRepo } from '@/lib/productRepo'
-import { Prisma } from '@prisma/client'
+import { productService } from '@/services/product.service'
 import { revalidatePath } from 'next/cache'
+import { AppError } from '@/utils/errors'
 import { after } from 'next/server'
 
 export type ActionState = {
@@ -12,62 +12,25 @@ export type ActionState = {
   payload?: any
 }
 
-// Helper to validate FormData
-const validateProduct = (formData: FormData) => {
-  const name = formData.get('name') as string
-  const sku = formData.get('sku') as string
-  const price = Number(formData.get('price'))
-  const stock = Number(formData.get('stock'))
-  const category = formData.get('category') as string
-  const id = formData.get('id') as string | null
-
-  const errors: Record<string, string> = {}
-  
-  if (!name || name.length < 3) errors.name = 'Name must be at least 3 chars'
-  if (!sku || !/^[A-Z0-9\-._]+$/.test(sku)) errors.sku = 'SKU invalid (A-Z, 0-9, . - _)'
-  if (isNaN(price) || price < 0) errors.price = 'Price must be >= 0'
-  if (isNaN(stock) || stock < 0) errors.stock = 'Stock must be >= 0'
-  if (!category) errors.category = 'Category is required'
-
-  return { errors, data: { id, name, sku, price, stock, category } }
-}
-
 export async function saveProductAction(prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const { errors, data } = validateProduct(formData)
-
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, message: 'Validation failed', fieldErrors: errors }
-  }
-
+  const data = Object.fromEntries(formData.entries())
+  
   try {
     if (data.id) {
        // Update
-       await productRepo.update(data.id, {
-         name: data.name,
-         sku: data.sku,
-         price: new Prisma.Decimal(data.price),
-         stock: data.stock,
-         category: data.category
-       })
-       // Log after response
+       await productService.update(data.id as string, data)
        after(() => console.log(`Product updated: ${data.sku}`))
     } else {
        // Create
-       await productRepo.create({
-         name: data.name,
-         sku: data.sku,
-         price: new Prisma.Decimal(data.price),
-         stock: data.stock,
-         category: data.category
-       })
+       await productService.create(data)
        after(() => console.log(`Product created: ${data.sku}`))
     }
 
     revalidatePath('/products')
     return { ok: true, message: 'Saved successfully' }
   } catch (error: any) {
-    if (error.message === 'SKU already exists') { 
-        return { ok: false, message: 'Validation failed', fieldErrors: { sku: 'SKU already exists' } }
+    if (error instanceof AppError) {
+      return { ok: false, message: error.message, fieldErrors: error.fieldErrors }
     }
     return { ok: false, message: 'Internal Server Error' }
   }
@@ -75,7 +38,7 @@ export async function saveProductAction(prevState: ActionState, formData: FormDa
 
 export async function toggleActiveAction(id: string) {
   try {
-    const product = await productRepo.toggleActive(id)
+    const product = await productService.toggleActive(id)
     revalidatePath('/products')
     return { ok: true, message: `Product ${product.active ? 'activated' : 'deactivated'}` }
   } catch (error) {

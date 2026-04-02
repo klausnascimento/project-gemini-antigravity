@@ -1,52 +1,23 @@
 import { prisma } from './prisma'
-import { Product, Prisma } from '@prisma/client'
-
-export type ProductFilterParams = {
-  query?: string
-  status?: 'active' | 'inactive' | 'all'
-  category?: string
-  page?: number
-  pageSize?: number
-  sort?: string // 'name' | 'price' | 'createdAt'
-  order?: 'asc' | 'desc'
-}
-
-export type CreateProductDTO = Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'active'>
-export type UpdateProductDTO = Partial<CreateProductDTO>
+import { Prisma } from '@prisma/client'
+import { CreateProductDTO, UpdateProductDTO, ProductFilterDTO } from '../dtos/product.dto'
 
 export const productRepo = {
   async create(data: CreateProductDTO) {
-    try {
-      return await prisma.product.create({
-        data: {
-          ...data,
-          active: true,
-        } as Prisma.ProductCreateInput,
-      })
-    } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new Error('SKU already exists')
-        }
-      }
-      throw error
-    }
+    // Apenas comunicação com o banco, sem try/catch sujo de regra de negócio
+    return await prisma.product.create({
+      data: {
+        ...data,
+        active: true,
+      } as Prisma.ProductCreateInput,
+    })
   },
 
   async update(id: string, data: UpdateProductDTO) {
-    try {
-      return await prisma.product.update({
-        where: { id },
-        data,
-      })
-    } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new Error('SKU already exists')
-        }
-      }
-      throw error
-    }
+    return await prisma.product.update({
+      where: { id },
+      data,
+    })
   },
 
   async toggleActive(id: string) {
@@ -69,7 +40,7 @@ export const productRepo = {
     pageSize = 10,
     sort = 'createdAt',
     order = 'desc',
-  }: ProductFilterParams) {
+  }: ProductFilterDTO) {
     const where: Prisma.ProductWhereInput = {
       AND: [
         query

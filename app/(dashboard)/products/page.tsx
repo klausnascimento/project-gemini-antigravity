@@ -1,4 +1,4 @@
-import { productRepo } from '@/lib/productRepo'
+import { productService } from '@/services/product.service'
 import { ProductFilters } from './_components/ProductFilters'
 import { ProductTable } from './_components/ProductTable'
 import { Suspense } from 'react'
@@ -17,11 +17,11 @@ type PageProps = {
 export default async function ProductsPage({ searchParams }: PageProps) {
   const params = await searchParams
   
-  const { products: rawProducts, metadata } = await productRepo.findMany({
+  const { products: rawProducts, metadata } = await productService.findMany({
     query: params.query,
-    status: params.status as any,
+    status: params.status,
     category: params.category,
-    page: Number(params.page) || 1,
+    page: params.page,
     pageSize: 10
   })
 
@@ -31,7 +31,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     price: Number(p.price)
   }))
 
-  const categories = await productRepo.getCategories()
+  const categories = await productService.getCategories()
 
   return (
     <div className="flex flex-col gap-6">
