@@ -2,47 +2,31 @@ import { productRepo } from '../lib/productRepo'
 import { createProductSchema, updateProductSchema, productFilterSchema } from '../dtos/product.dto'
 import { Prisma } from '@prisma/client'
 import { AppError } from '../utils/errors'
+import { validateData } from '../utils/validation'
 
-const formatZodErrors = (fieldErrors: Record<string, string[] | undefined>) => {
-  const formatted: Record<string, string> = {}
-  for (const key in fieldErrors) {
-    if (fieldErrors[key] && fieldErrors[key]!.length > 0) {
-      formatted[key] = fieldErrors[key]![0]
-    }
+const handleRepoError = (error: any): never => {
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+    throw new AppError('Validation failed', { sku: 'SKU already exists' }, 400)
   }
-  return formatted
+  throw error
 }
 
 export const productService = {
   async create(data: unknown) {
-    const parsed = createProductSchema.safeParse(data)
-    if (!parsed.success) {
-      throw new AppError('Validation failed', formatZodErrors(parsed.error.flatten().fieldErrors), 400)
-    }
-
+    const validData = validateData(createProductSchema, data)
     try {
-      return await productRepo.create(parsed.data)
+      return await productRepo.create(validData)
     } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new AppError('Validation failed', { sku: 'SKU already exists' }, 400)
-      }
-      throw error
+      return handleRepoError(error)
     }
   },
 
   async update(id: string, data: unknown) {
-    const parsed = updateProductSchema.safeParse(data)
-    if (!parsed.success) {
-      throw new AppError('Validation failed', formatZodErrors(parsed.error.flatten().fieldErrors), 400)
-    }
-
+    const validData = validateData(updateProductSchema, data)
     try {
-      return await productRepo.update(id, parsed.data)
+      return await productRepo.update(id, validData)
     } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new AppError('Validation failed', { sku: 'SKU already exists' }, 400)
-      }
-      throw error
+      return handleRepoError(error)
     }
   },
 
@@ -59,14 +43,12 @@ export const productService = {
   },
 
   async findMany(params: unknown) {
-    const parsed = productFilterSchema.safeParse(params)
-    if (!parsed.success) {
-      throw new AppError('Invalid filter parameters', formatZodErrors(parsed.error.flatten().fieldErrors), 400)
-    }
-    return await productRepo.findMany(parsed.data)
+    const validParams = validateData(productFilterSchema, params)
+    return await productRepo.findMany(validParams)
   },
 
   async getCategories() {
     return await productRepo.getCategories()
   }
 }
+

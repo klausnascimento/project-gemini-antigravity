@@ -35,16 +35,16 @@ describe('productService', () => {
       // name too short, price/stock < 0, empty category
       const invalidData = { name: 'Te', sku: 'TST-123', price: -5, stock: -1, category: '' }
       
-      await expect(productService.create(invalidData)).rejects.toThrow(AppError)
-      try {
-        await productService.create(invalidData)
-      } catch (e: any) {
-        expect(e.fieldErrors).toBeDefined()
-        expect(e.fieldErrors.name).toBeDefined()
-        expect(e.fieldErrors.price).toBeDefined()
-        expect(e.fieldErrors.stock).toBeDefined()
-        expect(e.fieldErrors.category).toBeDefined()
-      }
+      await expect(productService.create(invalidData)).rejects.toMatchObject({
+        name: 'AppError',
+        fieldErrors: {
+          name: expect.any(String),
+          price: expect.any(String),
+          stock: expect.any(String),
+          category: expect.any(String)
+        }
+      })
+      
       expect(productRepo.create).not.toHaveBeenCalled()
     })
 
@@ -60,13 +60,10 @@ describe('productService', () => {
       
       vi.mocked(productRepo.create).mockRejectedValue(error)
 
-      await expect(productService.create(validData)).rejects.toThrow(AppError)
-      
-      try {
-        await productService.create(validData)
-      } catch (e: any) {
-        expect(e.fieldErrors?.sku).toBe('SKU already exists')
-      }
+      await expect(productService.create(validData)).rejects.toMatchObject({
+        name: 'AppError',
+        fieldErrors: { sku: 'SKU already exists' }
+      })
     })
   })
 })

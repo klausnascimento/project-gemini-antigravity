@@ -17,6 +17,7 @@ async function runTests() {
     stock: 10,
     category: 'Electronics'
   })
+  if (!p1) throw new Error('Created product should not be undefined')
   console.assert(p1.id !== undefined, 'Created product should have ID')
   console.assert(p1.sku === 'TEST-001', 'SKU should match')
 
@@ -28,11 +29,13 @@ async function runTests() {
   // 3. Update
   console.log('Test 3: Update')
   const p1Updated = await productService.update(p1.id, { price: 100 })
+  if (!p1Updated) throw new Error('Updated product should not be undefined')
   console.assert(p1Updated.price.toString() === '100', 'Price should be updated')
 
   // 4. Toggle Active
   console.log('Test 4: Toggle Active')
   const p1Toggled = await productService.toggleActive(p1.id)
+  if (!p1Toggled) throw new Error('Toggled product should not be undefined')
   console.assert(p1Toggled.active === false, 'Should be inactive')
   
   // 5. Unique Constraint
