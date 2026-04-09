@@ -81,6 +81,6 @@ export const productRepo = {
     const categories = await prisma.product.groupBy({
         by: ['category'],
     })
-    return categories.map((c: any) => c.category)
+    return categories.map((categoryGroup) => categoryGroup.category)
   }
 }

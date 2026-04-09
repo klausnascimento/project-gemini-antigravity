@@ -56,7 +56,7 @@ export function WeeklyProgressChart({ habits }: WeeklyProgressChartProps) {
       </div>
 
       <div className="flex h-40 items-end justify-between gap-2 md:gap-4">
-        {chartData.map((day, i) => (
+        {chartData.map((day) => (
           <div key={day.date} className="flex h-full w-full flex-col items-center justify-end gap-2">
             {/* Tooltip simplificada via title */}
             <div

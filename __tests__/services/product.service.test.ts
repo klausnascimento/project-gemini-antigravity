@@ -1,8 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { productService } from '../../services/product.service'
 import { productRepo } from '../../lib/productRepo'
-import { Prisma } from '@prisma/client'
-import { AppError } from '../../utils/errors'
+import { Prisma, Product } from '@prisma/client'
 
 vi.mock('../../lib/productRepo', () => ({
   productRepo: {
@@ -15,6 +14,19 @@ vi.mock('../../lib/productRepo', () => ({
 }))
 
 describe('productService', () => {
+  const makeProduct = (overrides: Partial<Product> = {}): Product => ({
+    id: '1',
+    name: 'Test Product',
+    sku: 'TST-123',
+    price: new Prisma.Decimal(100),
+    stock: 10,
+    category: 'Test',
+    active: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -22,7 +34,7 @@ describe('productService', () => {
   describe('create', () => {
     it('should create a product with valid data', async () => {
       const validData = { name: 'Test Product', sku: 'TST-123', price: 100, stock: 10, category: 'Test' }
-      vi.mocked(productRepo.create).mockResolvedValue({ id: '1', ...validData, active: true, createdAt: new Date(), updatedAt: new Date() } as any)
+      vi.mocked(productRepo.create).mockResolvedValue(makeProduct())
       
       const result = await productService.create(validData)
       expect(result.id).toBe('1')

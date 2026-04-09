@@ -4,12 +4,13 @@ import { productService } from '@/services/product.service'
 import { revalidatePath } from 'next/cache'
 import { AppError } from '@/utils/errors'
 import { after } from 'next/server'
+import { SerializedProduct } from '@/lib/types'
 
 export type ActionState = {
   ok: boolean
   message: string
   fieldErrors?: Record<string, string>
-  payload?: any
+  payload?: SerializedProduct
 }
 
 export async function saveProductAction(prevState: ActionState, formData: FormData): Promise<ActionState> {
@@ -28,7 +29,7 @@ export async function saveProductAction(prevState: ActionState, formData: FormDa
 
     revalidatePath('/products')
     return { ok: true, message: 'Saved successfully' }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AppError) {
       return { ok: false, message: error.message, fieldErrors: error.fieldErrors }
     }
@@ -41,7 +42,7 @@ export async function toggleActiveAction(id: string) {
     const product = await productService.toggleActive(id)
     revalidatePath('/products')
     return { ok: true, message: `Product ${product.active ? 'activated' : 'deactivated'}` }
-  } catch (error) {
+  } catch {
     return { ok: false, message: 'Failed to toggle active status' }
   }
 }

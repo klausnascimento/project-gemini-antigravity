@@ -5,7 +5,7 @@ const prisma = new PrismaClient({
   adapter: new PrismaBetterSqlite3({
     url: process.env.DATABASE_URL ?? "file:./dev.db",
   }),
-} as any);
+});
 
 async function main() {
   const data = [

@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
       allowedOrigins: origins,
     },
   },
-  // @ts-ignore
   allowedDevOrigins: origins,
 };
 

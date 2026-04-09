@@ -49,7 +49,7 @@ async function runTests() {
         category: 'Test'
      })
      console.error('Should have failed with duplicate SKU')
-  } catch(e: any) {
+  } catch(e: unknown) {
      if (e instanceof AppError) {
        console.assert(e.fieldErrors?.sku === 'SKU already exists', 'Should throw correct error')
      } else {

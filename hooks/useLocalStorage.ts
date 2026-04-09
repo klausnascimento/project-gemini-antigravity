@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 /**
  * Hook customizado para abstrair o uso de LocalStorage no React/Next.js
@@ -11,21 +11,24 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   // Passo uma função de inicialização pro useState para ler o localstorage no primeiro render
   // Mas no Next.js isso pode causar mismatch. Então o pattern seguro inicializa com initialValue
   // e atualiza após a montagem.
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === "undefined") {
+      return initialValue;
+    }
 
-  useEffect(() => {
-    setIsMounted(true);
     try {
-      // Pega do local storage key usando nome customizado
       const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item));
-      }
+      return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
     }
-  }, [key]);
+  });
 
   // Retorna uma versão com a assinatura setter do useState
   const setValue = (value: T | ((val: T) => T)) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { HabitForm } from "./HabitForm";
 import { HabitList } from "./HabitList";
 import { WeeklyProgressChart } from "./WeeklyProgressChart";
@@ -14,12 +14,11 @@ export function HabitTrackerView() {
   const [habits, setHabits, isMounted] = useLocalStorage<Habit[]>("habits_v1", []);
   
   // Data local do usuário resolvida no client
-  const [currentDateString, setCurrentDateString] = useState("");
-
-  useEffect(() => {
-    // Definimos apenas onde roda via CSR para travar e ter controle da re-renderização
-    setCurrentDateString(formatDateToYYYYMMDD(new Date()));
-  }, []);
+  const currentDateString = useSyncExternalStore(
+    () => () => {},
+    () => formatDateToYYYYMMDD(new Date()),
+    () => ""
+  );
 
   const handleAddHabit = (title: string) => {
     const newHabit: Habit = {

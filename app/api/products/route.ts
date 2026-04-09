@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const result = await productService.findMany(queryParam)
     return NextResponse.json(result)
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AppError) {
       return NextResponse.json({ message: error.message, fieldErrors: error.fieldErrors }, { status: error.statusCode })
     }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const product = await productService.create(body)
     return NextResponse.json(product, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof AppError) {
       return NextResponse.json(
         { message: error.message, fieldErrors: error.fieldErrors },

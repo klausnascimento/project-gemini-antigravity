@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client'
 import { AppError } from '../utils/errors'
 import { validateData } from '../utils/validation'
 
-const handleRepoError = (error: any): never => {
+const handleRepoError = (error: unknown): never => {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
     throw new AppError('Validation failed', { sku: 'SKU already exists' }, 400)
   }
@@ -16,7 +16,7 @@ export const productService = {
     const validData = validateData(createProductSchema, data)
     try {
       return await productRepo.create(validData)
-    } catch (error: any) {
+    } catch (error: unknown) {
       return handleRepoError(error)
     }
   },
@@ -25,7 +25,7 @@ export const productService = {
     const validData = validateData(updateProductSchema, data)
     try {
       return await productRepo.update(id, validData)
-    } catch (error: any) {
+    } catch (error: unknown) {
       return handleRepoError(error)
     }
   },
@@ -51,4 +51,3 @@ export const productService = {
     return await productRepo.getCategories()
   }
 }
-
